@@ -1,0 +1,1 @@
+web: gunicorn Luftwagen.wsgi --log-file -

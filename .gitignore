@@ -1,0 +1,11 @@
+bin
+include
+lib
+share
+env
+venv
+*.sqlite3
+*.pyc
+staticfiles
+.Python
+pip-selfcheck.json
