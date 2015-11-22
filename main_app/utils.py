@@ -1,10 +1,11 @@
 
-def getPolutionPoints(x,y,length,width):
+def getPolutionPoints(LTx,LTy,RBx,RBy):
+    # LT = Left top corner, and RB = right bottom corner
     #todo implement this fuction
     return {
         'status':'Under construction',
-        'x':x,
-        'y':y,
-        'length':length,
-        'width':width
+        'LTx':LTx,
+        'LTy':LTy,
+        'RBx':RBx,
+        'RBy':RBy
     }

@@ -9,7 +9,7 @@ class PolutionDataForBoundedBoxView(APIView):
     permission_classes = []
 
     def get(self, request):
-        pointsJSON = getPolutionPoints(request.GET['x'],request.GET['y'],request.GET['length'],request.GET['width'])
+        pointsJSON = getPolutionPoints(request.GET['LTx'],request.GET['LTy'],request.GET['RBx'],request.GET['RBw'])
         try:
             return Response(pointsJSON)
         except Exception as e:
