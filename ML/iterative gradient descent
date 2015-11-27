@@ -1,0 +1,9 @@
+while costFunction(thetaMatrix) > 30:
+	tempList = [110,1110,1110,110,110,110]
+	for j in range(0, 6, 1):
+		temp = 0
+		for i in range(len(yMatrix)):
+			temp += float( ((featureMatrix[i,] * thetaMatrix) - yMatrix[i, 0]) * featureMatrix[i, j] )
+		tempList[j] = float( thetaMatrix[j, 0] - ((temp / len(yMatrix)) * learningRate))
+	for i in range(6):
+		thetaMatrix[i, 0] = float(tempList[i])
