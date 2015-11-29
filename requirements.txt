@@ -3,6 +3,7 @@ backports.ssl-match-hostname==3.4.0.2
 certifi==2015.9.6.2
 cycler==0.9.0
 decorator==4.0.4
+-e git+https://github.com/jwass/directions.py@e30a9bfda1faf367def49a919444727bda47eb50#egg=directions.py-master
 dj-database-url==0.3.0
 dj-static==0.0.6
 Django==1.8.5
@@ -29,9 +30,11 @@ nbformat==4.0.1
 notebook==4.0.6
 numpy==1.10.1
 oauthlib==1.0.3
+overpy==0.3.1
 path.py==8.1.2
 pexpect==4.0.1
 pickleshare==0.5
+-e git+https://github.com/Mapkin/polycomp/@28a8d9a5ece1e58308dffbd087e1a2be3ddf8c49#egg=polycomp-master
 ptyprocess==0.5
 Pygments==2.0.2
 PyJWT==1.4.0
