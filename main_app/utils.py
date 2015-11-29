@@ -1,6 +1,6 @@
 import math
 import overpy
-import directions
+from . import routers
 
 def getPolutionPoints(LTx,LTy,RBx,RBy):
     # LT = Left top corner, and RB = right bottom corner
@@ -31,16 +31,17 @@ def PointsInCircum(lat, long,r,n=10):
     return [(math.sin(2*math.pi/n*x)*r+lat,math.cos(2*math.pi/n*x)*r+long) for x in xrange(0,n+1)]
 
 def getRandomDirections(lat,long,distance):
-    google = directions.Google()
+    google = routers.Google()
     cs = PointsInCircum(lat,long,distance/2)
-    routes = [route.coords for routes in
+    routes = [route for routes in
         [google.route("%f,%f"%(lat,long),"%f,%f"%(lat,long),waypoints=["%f,%f"%c]) for c in cs] for route in routes]
     return routes
 
 def getRandomDirectionsAtoB(Alat,Along,Blat,Blong):
-    google = directions.Google()
+    google = routers.Google()
     cs = [["%f,%f"%((Alat+Blat)/2+(i/60.0),(Along+Blong)/2+(j/60.0))] for i in xrange(-1,2) for j in xrange(-1,2)]
     cs.append([])
-    routes = [route.coords for routes in
+    routes = [route for routes in
         [google.route("%f,%f"%(Alat,Along),"%f,%f"%(Blat,Blong),waypoints=c) for c in cs] for route in routes]
     return routes
+
