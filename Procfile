@@ -1,1 +1,1 @@
-web: gunicorn Luftwagen.wsgi --log-file -
+web: gunicorn Luftwagen.wsgi
