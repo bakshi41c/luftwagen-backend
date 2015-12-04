@@ -34,10 +34,13 @@ overpy==0.3.1
 path.py==8.1.2
 pexpect==4.0.1
 pickleshare==0.5
+scipy==0.16.1
 -e git+https://github.com/Mapkin/polycomp/@28a8d9a5ece1e58308dffbd087e1a2be3ddf8c49#egg=polycomp-master
 ptyprocess==0.5
 Pygments==2.0.2
 PyJWT==1.4.0
+-r https://raw.githubusercontent.com/Lasagne/Lasagne/master/requirements.txt
+https://github.com/Lasagne/Lasagne/archive/master.zip
 pyparsing==2.0.5
 pystache==0.5.4
 python-dateutil==2.4.2
