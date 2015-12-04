@@ -19,6 +19,7 @@ def cache_traffic(quadkey, traffic_data):
 
 
 def get_traffic_data(coord_x, coord_y):
+    print coord_x, coord_y
     z = 19
     (x_tile, y_tile) = calculate_tile(coord_x, coord_y, z)
     quadkey = tile2quadkey(x_tile, y_tile, z)
@@ -28,6 +29,9 @@ def get_traffic_data(coord_x, coord_y):
     if (quadkey in traffic_cache) and (traffic_cache[quadkey][1] > time.time()):
         print ("Cached")
         traffic_data = xml.fromstring(traffic_cache[quadkey][0])
+    elif (quadkey in traffic_cache) and (traffic_cache[quadkey][1] <= time.time()):
+        print ("Cache Expired, hence deleted")
+        del traffic_cache[quadkey]
     else:
         print ("New")
         url = form_url(quadkey)
@@ -35,6 +39,10 @@ def get_traffic_data(coord_x, coord_y):
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
         traffic_xml = response.read()
+        print traffic_xml
+
+        if traffic_xml is "":
+            return 1.0
 
         # Getting the root of the XML data
         root = xml.fromstring(traffic_xml)
@@ -52,14 +60,16 @@ def get_traffic_data(coord_x, coord_y):
 def calculate_tile(lat=0.0, lon=0.0, z=1):
     lat_rad = lat * math.pi / 180.0
     n = 2 ** z
+    print n
     x_tile = n * ((lon + 180.0) / 360.0)
-    y_tile = n * (1 - (math.log(math.tan(lat_rad) + 1 / math.cos(lat_rad)) / math.pi)) / 2
+    y_tile = n * (1 - (math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi)) / 2
 
     return int(x_tile), int(y_tile)
 
 
 def tile2quadkey(x_tile, y_tile, z):
-    quadKey = ""
+    print x_tile, y_tile, z
+    quadkey = ""
     for i in range(z, 0, -1):
         digit = 0
         mask = 1 << (i - 1)
@@ -69,19 +79,17 @@ def tile2quadkey(x_tile, y_tile, z):
         if (y_tile & mask) is not 0:
             digit += 2
 
-        quadKey += str(digit)
+        quadkey += str(digit)
 
-    return quadKey
+    return quadkey
 
 
 def form_url(quadkey):
     url = "http://traffic.cit.api.here.com/traffic/6.1/flow.xml" \
           + "?quadkey=" + quadkey + "&app_id=" + app_id + "&app_code=" + app_code
+
+    #url = "http://traffic.cit.api.here.com/traffic/6.1/flow/xml/" \
+    #       + str(z) + "/" + str(x_tile) + "/" + str(y_tile) + "?app_id=" + app_id + "&app_code=" + app_code
+
     return url
 
-
-# How to use
-lat = 51.5263248
-lon = -0.1355824
-
-print get_traffic_data(lat, lon)

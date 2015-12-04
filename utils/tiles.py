@@ -1,6 +1,8 @@
 import math
 import random
 import fusion
+import pollution
+
 
 class Tile:
     def __init__(self, start_x=0.0, start_y=0.0, end_x=0.0, end_y=0.0):
@@ -99,10 +101,8 @@ def main():
 
     f = open(filename, 'w')
     for tile in smaller_tiles:
-        line = "\"" + tile.kml() + "\"" + ", " + str(random.randint(70, 80)) + "\n"
+        line = "\"" + tile.kml() + "\"" + ", " + pollution.get_pollution_value(tile.start_x, tile.start_y, 0) + "\n"
         f.write(line)
     f.close()
 
     fusion.update_table(filename)
-
-main()

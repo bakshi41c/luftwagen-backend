@@ -4,6 +4,13 @@ import os.path as systemfile
 import math
 import time
 
+compassList = "N NNE NW ENE E ESE SE SSE S SSW SW WSW W WNW NW NNW"
+compassDict = {}
+compassTmpval = 0
+for i in compassList.split(" "):
+    compassDict[i] = compassTmpval
+    compassTmpval += 22.5
+
 metoffice_api_key = "6b57d1a1-0fc0-40dc-ae66-950b3ec03c4f"
 
 site_list_url = "http://datapoint.metoffice.gov.uk/public/data/val/wxfcs/all/xml/sitelist?res=daily&key=" + metoffice_api_key
@@ -76,7 +83,9 @@ def cache_weather(site_id, weather_data):
     weather_cache[site_id] = (weather_data, round(time.time()) + cache_expiry)
 
 
-def get_weather(lat, lon):
+def get_weather(lat, lon, hour_offset):
+    required_minute = (int(time.strftime("%H")) + hour_offset) * 60
+    print required_minute
     sites = get_weather_sites()
     site_id = get_nearest_weather_site(sites, lat, lon)
 
@@ -91,37 +100,25 @@ def get_weather(lat, lon):
         req = urllib2.Request(weather_url % site_id)
         response = urllib2.urlopen(req)
         weather_xml = xml.fromstring(response.read())
-        weather_data = weather_xml[1][0][0][-1]
-        cache_weather(site_id, xml.tostring(weather_data))  # cache the new data for future
+
+        weather_data_sets = weather_xml[1][0][0][:]
+
+        for data in reversed(weather_data_sets):
+            if abs(int(data.text)) >= required_minute:
+                weather_data = data
+
+        print xml.tostring(weather_data)
+        cache_weather(site_id, xml.tostring(weather_xml[1][0][0][-1]))  # cache the new data for future
 
     if weather_data is None:
         return None  # something went terribly wrong
 
     # all the data from met office
     temp = weather_data.get('T')
-    feels_like = weather_data.get('F')
-
-    wind_direction = weather_data.get('D')
+    wind_direction = compassDict[weather_data.get('D')]
     wind_speed = weather_data.get('S')
-    wind_gust = weather_data.get('G')
-
     relative_humidity = weather_data.get('H')
     precipitation_prob = weather_data.get('Pp')
 
-    visibility = weather_data.get('V')
-    uv = weather_data.get('U')
-    weather_type = weather_data.get('W')
-
-    # NOTE: Currently only returning temperature and wind speed, but feel free to take more
-    return temp, wind_speed
-
-
-# SAMPLE usage, Delete before using it as library
-
-temp, wind_speed = get_weather(51.0123, 0.3)  # This data will be new
-print temp, wind_speed
-
-time.sleep(1)
-
-temp, wind_speed = get_weather(51.0123, 0.3)  # This data will be cached
-print temp, wind_speed
+    return float(precipitation_prob), float(relative_humidity), float(temp), float(wind_direction), float(
+        wind_speed) * 0.44704

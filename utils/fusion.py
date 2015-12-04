@@ -33,12 +33,6 @@ def update_table(filename):
 
         print access_token
 
-        # Delete all rows
-        #resp = requests.post(delete_url, headers=get_delete_header())
-        #print resp.content
-
-        sleep(10)
-
         # Re-upload all rows
         resp = requests.post(url, data=f, headers=get_upload_header())
         print resp.content
