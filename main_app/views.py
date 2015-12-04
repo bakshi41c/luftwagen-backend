@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView, Response
-from utils import getPolutionPoints, getRandomDirections, getRandomDirectionsAtoB
+from pollution_directions import getPolutionPoints, getRandomDirections, getRandomDirectionsAtoB, addPollutionLeveltoRoutes,bestThreeRoutes
 
 # Create your views here.
 
@@ -23,8 +23,10 @@ class DirectionsForWorkout(APIView):
 
     def get(self, request):
         directions = getRandomDirections(float(request.GET['lat']),float(request.GET['long']),float(request.GET['distance']))
+        addPollutionLeveltoRoutes(directions)
+        print directions
         try:
-            return Response(directions)
+            return Response(bestThreeRoutes(directions))
         except Exception:
             import traceback
             print traceback.format_exc()
@@ -35,8 +37,9 @@ class DirectionsAtoB(APIView):
     def get(self, request):
         directions = getRandomDirectionsAtoB(float(request.GET['Alat']),float(request.GET['Along']),
                                              float(request.GET['Blat']),float(request.GET['Blong']))
+        addPollutionLeveltoRoutes(directions)
         try:
-            return Response(directions)
+            return Response(bestThreeRoutes(directions))
         except Exception:
             import traceback
             print traceback.format_exc()
