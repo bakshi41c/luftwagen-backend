@@ -1,24 +1,29 @@
+import os
 import numpy as np
+from Luftwagen.settings import BASE_DIR
+
+def openFile(fileName):
+	return open(os.path.join(BASE_DIR,'ML/%s'%fileName))
+
 segmentvar = 1500
 
-
-file = open("TMPval")
+file = openFile("TMPval")
 TMP = []
 for i in file:
 	TMP.append(float(i))
 
-file = open("WDIRval")
+file = openFile("WDIRval")
 WDIR = []
 for i in file:
 	WDIR.append(float(i))
 
-file = open("WSPDval")
+file = openFile("WSPDval")
 WSPD = []
 for i in file:
 	WSPD.append(float(i))
 
 yList = []
-file = open("PM25val")
+file = openFile("PM25val")
 for i in file:
 	temp = [float(i)]
 	yList.append(temp)

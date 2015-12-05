@@ -27,7 +27,6 @@ class DirectionsForWorkout(APIView):
         directions = getRandomDirections(float(request.GET['lat']), float(request.GET['long']),
                                          float(request.GET['distance']))
         addPollutionLeveltoRoutes(directions)
-        print directions
         try:
             return Response(bestThreeRoutes(directions))
         except Exception:
