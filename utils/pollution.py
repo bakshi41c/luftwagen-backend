@@ -1,8 +1,7 @@
 import traffic
 import weather
-
-
-# import NN as nn
+from ML.NN import setup
+get_pm5_prediction = setup()
 
 
 def get_pollution_value(lat, lon, hour_offset):
@@ -24,8 +23,7 @@ def predict_pollution(precipitation_prob, relative_humidity, temp, wind_directio
     pm25predictedval = 1.36006991e+01 + (temp * -9.32461073e-02) + (wind_direction * -3.35510810e-04) + (
         wind_speed * -7.50369156e-01)
 
-    # nn_prediction = get_pm5_prediction(TMP=temp, WDIR=wind_direction, WSPD=wind_speed)
-    nn_prediction = 0
+    nn_prediction = get_pm5_prediction(TMP=temp, WDIR=wind_direction, WSPD=wind_speed)
 
     # 3.6 is average
     if abs(nn_prediction - pm25predictedval) > 7.2:

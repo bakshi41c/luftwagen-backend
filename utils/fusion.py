@@ -1,12 +1,13 @@
 from time import sleep
 import urllib
 import urllib2
-import requests, json
+import requests
+import json
 
-#********************
+# ********************
 # !!! ATTENTION !!!**
-#********************
-# Repalce these *** values with actual values
+# ********************
+# Replace these *** values with actual values
 # Ask Shubham if unsure
 fusion_table_id = "1pHZ_F-xDRFU0omNrpu-SdLoVYOm0Fm5CPDdSsbab"
 client_id = "***.apps.googleusercontent.com"
