@@ -99,12 +99,14 @@ def get_weather(lat, lon, hour_offset):
         req = urllib2.Request(weather_url % site_id)
         response = urllib2.urlopen(req)
         weather_xml = xml.fromstring(response.read())
-
         weather_data_sets = weather_xml[1][0][0][:]
 
-        for data in reversed(weather_data_sets):
+        for data in reversed(weather_data_sets): # Find the closest matching minute (interval in data is 3 hours)
             if abs(int(data.text)) >= required_minute:
                 weather_data = data
+
+        if weather_data is None:  # No match found above. Time is probably past 9pm, hence return next day's forecast
+            weather_data = weather_xml[1][0][1][0]
 
         cache_weather(site_id, xml.tostring(weather_data))  # cache the new data for future
 
@@ -118,7 +120,8 @@ def get_weather(lat, lon, hour_offset):
     relative_humidity = weather_data.get('H')
     precipitation_prob = weather_data.get('Pp')
 
-    #print "weather = " + precipitation_prob, relative_humidity, temp, wind_direction, wind_speed
+    # print "weather = " + precipitation_prob, relative_humidity, temp, wind_direction, wind_speed
 
     return float(precipitation_prob), float(relative_humidity), float(temp), float(wind_direction), float(
         wind_speed) * 0.44704
+
