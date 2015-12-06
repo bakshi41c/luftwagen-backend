@@ -91,28 +91,45 @@ def main():
     london_x2 = 51.308527
     london_y2 = 0.246893
 
-    # try 50
     big_tile = tiles.Tile(london_x1, london_y1, london_x2, london_y2)
     smaller_tiles = tiles.fragment_tile(big_tile, tiles.m_to_lat(200), tiles.m_to_lon(200 / 3, london_x1))
-    # print smaller_tiles
 
     filename = 'fusion.csv'
 
-    with open(filename, 'w') as f:
-        i = 0
-        sum = 0
-        for tile in smaller_tiles:
-            pollution_value = 1.0
-            if i % 5 == 0:
-                pollution_value = pollution.get_pollution_value(tile.start_x, tile.start_y, 0)
-                sum = 0
-            else:
-                pollution_value = sum / (i % 10)
+    done_tiles = {}
 
-            line = "\"" + tile.kml() + "\"" + ", " + str(pollution_value) + "\n"
+    for i in xrange(len(smaller_tiles)):
+        done_tiles[i] = False
+
+    with open(filename, 'w') as f:
+        for i in xrange(len(smaller_tiles)):
+            tile = smaller_tiles[i]
+            key = tile.key
+
+            if done_tiles[key] is True:
+                continue
+            else:
+                done_tiles[key] = True
+
+            pollution_value = pollution.get_pollution_value(tile.start_x, tile.start_y, 0)
+
+            line = "\"" + tile.kml() + "\"" + ", " + str(pollution_value) + ", " + str(key) + "\n"
             f.write(line)
-            i += 1
-            sum += pollution_value
+
+            neighbour_keys = [key + 1, key - 1, (key + 169), (key - 169), (key + 170), (key + 168), (key - 170),
+                              (key - 168)]
+
+            weights = [0.9, 0.9, 0.9, 0.9, 0.8, 0.8, 0.8, 0.8]
+
+            for j in xrange(len(neighbour_keys)):
+                index = neighbour_keys[j]
+                if 0 < index < len(smaller_tiles) and done_tiles[index] is False:
+                    neighbour = smaller_tiles[index]
+                    line = "\"" + neighbour.kml() + "\"" + ", " + str(weights[j] * pollution_value) + ", " + str(
+                        neighbour.key) + "\n"
+                    f.write(line)
+                    done_tiles[neighbour.key] = True
+
             print "Progress: " + str(i) + "/" + str(len(smaller_tiles))
 
     success = False
@@ -122,11 +139,11 @@ def main():
         try:
             print "Try no:" + str(tries) + " to update table"
             update_table(filename)
-
         except Exception:
             print "Failed to update table"
 
     if success:
         print "Last fusion update: " + str(datetime.datetime.now())
+
 
 main()

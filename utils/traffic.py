@@ -16,7 +16,8 @@ traffic_cache = {}
 
 
 def cache_traffic(x_tile, y_tile, quadkey, traffic_data):
-    traffic_cache[quadkey] = (traffic_data, round(time.time()) + cache_expiry)
+    expiry = round(time.time() + cache_expiry)
+    traffic_cache[quadkey] = (traffic_data, round(expiry))
 
 
 def get_traffic_data(coord_x, coord_y):

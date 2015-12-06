@@ -2,7 +2,8 @@ import math
 
 
 class Tile:
-    def __init__(self, start_x=0.0, start_y=0.0, end_x=0.0, end_y=0.0):
+    def __init__(self, start_x=0.0, start_y=0.0, end_x=0.0, end_y=0.0, key=-1):
+        self.key = key
         self.start_x = start_x
         self.start_y = start_y
         self.end_x = end_x
@@ -52,14 +53,15 @@ def fragment_tile(big_tile, step_x, step_y):
     largest_y = max(big_tile.start_y, big_tile.end_y)
 
     current_x = smallest_x
-
+    key = 0
     while (current_x + step_x) <= largest_x:
         current_y = smallest_y
 
         while (current_y + step_y) <= largest_y:
-            tile = Tile(current_x, current_y, current_x + step_x, current_y + step_y)
+            tile = Tile(current_x, current_y, current_x + step_x, current_y + step_y, key)
             smaller_tiles.append(tile)
             current_y += step_y
+            key += 1
             # print str(tile)
 
         current_x += step_x
