@@ -6,10 +6,13 @@ import weather
 
 def get_pollution_value(lat, lon, hour_offset):
     traffic_flow = traffic.get_traffic_data(lat, lon)
-    o3, pm25 = predict_pollution(*weather.get_weather(lat, lon, hour_offset))
-
     print "traffic: " + str(traffic_flow)
-    print o3, pm25
+    o3, pm25 = predict_pollution(*weather.get_weather(lat, lon, hour_offset))
+    print "o3=" + str(o3) + ", pm25=" + str(pm25)
+
+    aggregate_value = (o3 + pm25)
+
+    return aggregate_value + ((traffic_flow / 10.0) * aggregate_value)
 
 
 def get_pollution_rating(lat, lon):

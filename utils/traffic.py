@@ -8,7 +8,7 @@ import time
 app_id = "tip09eTk3MPc1vqGNztA"
 app_code = "Z8z1Sd_gX-4MvRacAgihqw"
 
-cache_expiry = 15  # 15 minutes
+cache_expiry = 15 * 60  # 15 minutes
 
 # format for traffic_cache= {quadkey: (value, expiry)}
 traffic_cache = {}
@@ -19,7 +19,6 @@ def cache_traffic(quadkey, traffic_data):
 
 
 def get_traffic_data(coord_x, coord_y):
-    print coord_x, coord_y
     z = 19
     (x_tile, y_tile) = calculate_tile(coord_x, coord_y, z)
     quadkey = tile2quadkey(x_tile, y_tile, z)
@@ -27,27 +26,14 @@ def get_traffic_data(coord_x, coord_y):
     traffic_data = None
 
     if (quadkey in traffic_cache) and (traffic_cache[quadkey][1] > time.time()):
-        print ("Cached")
+        print ("Traffic Cached")
         traffic_data = xml.fromstring(traffic_cache[quadkey][0])
     elif (quadkey in traffic_cache) and (traffic_cache[quadkey][1] <= time.time()):
-        print ("Cache Expired, hence deleted")
+        print ("Traffic Cache Expired, hence deleted")
         del traffic_cache[quadkey]
     else:
-        print ("New")
-        url = form_url(quadkey)
-        print url
-        req = urllib2.Request(url)
-        response = urllib2.urlopen(req)
-        traffic_xml = response.read()
-        print traffic_xml
-
-        if traffic_xml is "":
-            return 1.0
-
-        # Getting the root of the XML data
-        root = xml.fromstring(traffic_xml)
-        roadway = root[0][0]
-        traffic_data = roadway[0][0][1]
+        print ("Traffic New")
+        traffic_data = get_traffic_online(quadkey)
         cache_traffic(quadkey, xml.tostring(traffic_data))
 
     if traffic_data is None:
@@ -57,10 +43,24 @@ def get_traffic_data(coord_x, coord_y):
     return jf
 
 
+def get_traffic_online(quadkey):
+    url = form_url(quadkey)
+    req = urllib2.Request(url)
+    response = urllib2.urlopen(req)
+    traffic_xml = response.read()
+
+    if traffic_xml is "":
+        return 1.0
+
+    # Getting the root of the XML data
+    root = xml.fromstring(traffic_xml)
+    roadway = root[0][0]
+    return roadway[0][0][1]
+
+
 def calculate_tile(lat=0.0, lon=0.0, z=1):
     lat_rad = lat * math.pi / 180.0
     n = 2 ** z
-    print n
     x_tile = n * ((lon + 180.0) / 360.0)
     y_tile = n * (1 - (math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi)) / 2
 
@@ -68,7 +68,6 @@ def calculate_tile(lat=0.0, lon=0.0, z=1):
 
 
 def tile2quadkey(x_tile, y_tile, z):
-    print x_tile, y_tile, z
     quadkey = ""
     for i in range(z, 0, -1):
         digit = 0
@@ -88,8 +87,7 @@ def form_url(quadkey):
     url = "http://traffic.cit.api.here.com/traffic/6.1/flow.xml" \
           + "?quadkey=" + quadkey + "&app_id=" + app_id + "&app_code=" + app_code
 
-    #url = "http://traffic.cit.api.here.com/traffic/6.1/flow/xml/" \
+    # url = "http://traffic.cit.api.here.com/traffic/6.1/flow/xml/" \
     #       + str(z) + "/" + str(x_tile) + "/" + str(y_tile) + "?app_id=" + app_id + "&app_code=" + app_code
 
     return url
-

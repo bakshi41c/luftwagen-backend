@@ -85,7 +85,6 @@ def cache_weather(site_id, weather_data):
 
 def get_weather(lat, lon, hour_offset):
     required_minute = (int(time.strftime("%H")) + hour_offset) * 60
-    print required_minute
     sites = get_weather_sites()
     site_id = get_nearest_weather_site(sites, lat, lon)
 
@@ -107,8 +106,7 @@ def get_weather(lat, lon, hour_offset):
             if abs(int(data.text)) >= required_minute:
                 weather_data = data
 
-        print xml.tostring(weather_data)
-        cache_weather(site_id, xml.tostring(weather_xml[1][0][0][-1]))  # cache the new data for future
+        cache_weather(site_id, xml.tostring(weather_data))  # cache the new data for future
 
     if weather_data is None:
         return None  # something went terribly wrong
@@ -119,6 +117,8 @@ def get_weather(lat, lon, hour_offset):
     wind_speed = weather_data.get('S')
     relative_humidity = weather_data.get('H')
     precipitation_prob = weather_data.get('Pp')
+
+    print "weather = " + precipitation_prob, relative_humidity, temp, wind_direction, wind_speed
 
     return float(precipitation_prob), float(relative_humidity), float(temp), float(wind_direction), float(
         wind_speed) * 0.44704
