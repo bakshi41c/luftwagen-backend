@@ -118,7 +118,7 @@ def get_weather(lat, lon, hour_offset):
     relative_humidity = weather_data.get('H')
     precipitation_prob = weather_data.get('Pp')
 
-    print "weather = " + precipitation_prob, relative_humidity, temp, wind_direction, wind_speed
+    #print "weather = " + precipitation_prob, relative_humidity, temp, wind_direction, wind_speed
 
     return float(precipitation_prob), float(relative_humidity), float(temp), float(wind_direction), float(
         wind_speed) * 0.44704

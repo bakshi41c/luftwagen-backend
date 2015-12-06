@@ -12,7 +12,7 @@ class PollutionForCoordinate(APIView):
 
     def get(self, request):
         pollution_value = pollution.get_pollution_value(float(request.GET['lat']), float(request.GET['long']), 0)
-        json_response = {"pollution" : pollution_value}
+        json_response = {"pollution": str(pollution_value)}
         try:
             return Response(json_response)
         except Exception:

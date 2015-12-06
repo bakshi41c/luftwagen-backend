@@ -8,39 +8,39 @@ import time
 app_id = "tip09eTk3MPc1vqGNztA"
 app_code = "Z8z1Sd_gX-4MvRacAgihqw"
 
-cache_expiry = 15 * 60  # 15 minutes
+cache_expiry = 60 * 60  # 60 minutes
+z = 19
 
 # format for traffic_cache= {quadkey: (value, expiry)}
 traffic_cache = {}
 
 
-def cache_traffic(quadkey, traffic_data):
+def cache_traffic(x_tile, y_tile, quadkey, traffic_data):
     traffic_cache[quadkey] = (traffic_data, round(time.time()) + cache_expiry)
 
 
 def get_traffic_data(coord_x, coord_y):
-    z = 19
     (x_tile, y_tile) = calculate_tile(coord_x, coord_y, z)
+    print x_tile, y_tile
     quadkey = tile2quadkey(x_tile, y_tile, z)
 
-    traffic_data = None
+    traffic_data = 1.0
 
     if (quadkey in traffic_cache) and (traffic_cache[quadkey][1] > time.time()):
         print ("Traffic Cached")
-        traffic_data = xml.fromstring(traffic_cache[quadkey][0])
+        traffic_data = traffic_cache[quadkey][0]
     elif (quadkey in traffic_cache) and (traffic_cache[quadkey][1] <= time.time()):
         print ("Traffic Cache Expired, hence deleted")
         del traffic_cache[quadkey]
     else:
         print ("Traffic New")
-        traffic_data = get_traffic_online(quadkey)
-        cache_traffic(quadkey, xml.tostring(traffic_data))
+        traffic_data = float(get_traffic_online(quadkey))
+        cache_traffic(x_tile, y_tile, quadkey, float(traffic_data))
 
-    if traffic_data is None:
-        return 1.0  # return the lowest value in case of error
+    if traffic_data < 0:
+        traffic_data = 1.0
 
-    jf = float(traffic_data.get('JF'))
-    return jf
+    return traffic_data
 
 
 def get_traffic_online(quadkey):
@@ -55,7 +55,7 @@ def get_traffic_online(quadkey):
     # Getting the root of the XML data
     root = xml.fromstring(traffic_xml)
     roadway = root[0][0]
-    return roadway[0][0][1]
+    return roadway[0][0][1].get('JF')
 
 
 def calculate_tile(lat=0.0, lon=0.0, z=1):

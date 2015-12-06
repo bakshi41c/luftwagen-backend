@@ -1,7 +1,4 @@
 import math
-import random
-import fusion
-import pollution
 
 
 class Tile:
@@ -80,29 +77,3 @@ def m_to_lon(distance, latitude):
     one_lon = 111.320 * math.cos(latitude) * (10 ** 3)  # meters
     longitude = distance / one_lon
     return longitude
-
-
-def main():
-    london_x1 = 51.700559
-    london_y1 = -0.497709
-
-    london_x2 = 51.308527
-    london_y2 = 0.246893
-
-    # try 50
-    big_tile = Tile(london_x1, london_y1, london_x2, london_y2)
-    smaller_tiles = fragment_tile(big_tile, m_to_lat(100), m_to_lon(100/3, london_x1))
-    print len(smaller_tiles)
-
-    print (len(smaller_tiles) * 1232) / 1000000
-    # print smaller_tiles
-
-    filename = 'fusion.csv'
-
-    f = open(filename, 'w')
-    for tile in smaller_tiles:
-        line = "\"" + tile.kml() + "\"" + ", " + pollution.get_pollution_value(tile.start_x, tile.start_y, 0) + "\n"
-        f.write(line)
-    f.close()
-
-    fusion.update_table(filename)
