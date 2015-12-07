@@ -14,7 +14,7 @@ import pollution
 # Ask Shubham if unsure
 
 
-fusion_table_id = "1uscrBV4D6yxUcHkz7qVU6nCjSTmSo_qxTERxNQXC"  # "1pHZ_F-xDRFU0omNrpu-SdLoVYOm0Fm5CPDdSsbab"
+fusion_table_id = "1pHZ_F-xDRFU0omNrpu-SdLoVYOm0Fm5CPDdSsbab"  # 1uscrBV4D6yxUcHkz7qVU6nCjSTmSo_qxTERxNQXC
 client_id = "670715399306-hahi5146oiap2fpqrm890n61h9v6110r.apps.googleusercontent.com"
 client_secret = "aKinU0Qp-H7T6cWX0LdREO_z"
 server_key = "AIzaSyAXOf2VLCgafuEmBGsfinlzsxCzl0_AX_o"
@@ -134,11 +134,12 @@ def main():
 
     success = False
     tries = 0
-    while success is not True or tries < 3:
+    while (success is False) and tries < 3:
         tries += 1
         try:
             print "Try no:" + str(tries) + " to update table"
             update_table(filename)
+            success = True
         except Exception:
             print "Failed to update table"
 
