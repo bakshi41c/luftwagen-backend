@@ -1,6 +1,9 @@
 import os
+import random
 import urllib
 import urllib2
+
+import math
 import requests
 import json
 import tiles
@@ -14,7 +17,7 @@ import pollution
 # Ask Shubham if unsure
 
 
-fusion_table_id = "1pHZ_F-xDRFU0omNrpu-SdLoVYOm0Fm5CPDdSsbab"  # 1uscrBV4D6yxUcHkz7qVU6nCjSTmSo_qxTERxNQXC
+fusion_table_id = "1pHZ_F-xDRFU0omNrpu-SdLoVYOm0Fm5CPDdSsbab"  # 1KsvRC8heJFqu03hZAwCWtWqw7WlrwBHanXhuTLC2
 client_id = "670715399306-hahi5146oiap2fpqrm890n61h9v6110r.apps.googleusercontent.com"
 client_secret = "aKinU0Qp-H7T6cWX0LdREO_z"
 server_key = "AIzaSyAXOf2VLCgafuEmBGsfinlzsxCzl0_AX_o"
@@ -99,38 +102,39 @@ def main():
     done_tiles = {}
 
     for i in xrange(len(smaller_tiles)):
-        done_tiles[i] = False
+        done_tiles[i] = -1.0
+
+    for i in xrange(len(smaller_tiles)):
+        tile = smaller_tiles[i]
+        key = tile.key
+
+        if done_tiles[key] >= 0:
+            continue
+
+        pollution_value = pollution.get_pollution_value(tile.start_x, tile.start_y, 0)
+
+        done_tiles[key] = pollution_value
+
+        neighbour_keys = [key + 1, key - 1, (key + 169), (key - 169), (key + 170), (key + 168), (key - 170),
+                          (key - 168)]
+
+        weights = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+        for j in xrange(len(neighbour_keys)):
+            index = neighbour_keys[j]
+
+            if 0 < index < len(smaller_tiles):
+                if done_tiles[index] >= 0:
+                    done_tiles[index] = (done_tiles[index] + (weights[j] * pollution_value)) / 2.0
+                else:
+                    done_tiles[index] = weights[j] * pollution_value
+
+        print "Progress: " + str(i) + "/" + str(len(smaller_tiles))
 
     with open(filename, 'w') as f:
-        for i in xrange(len(smaller_tiles)):
-            tile = smaller_tiles[i]
-            key = tile.key
-
-            if done_tiles[key] is True:
-                continue
-            else:
-                done_tiles[key] = True
-
-            pollution_value = pollution.get_pollution_value(tile.start_x, tile.start_y, 0)
-
-            line = "\"" + tile.kml() + "\"" + ", " + str(pollution_value) + ", " + str(key) + "\n"
+        for tile in smaller_tiles:
+            line = "\"" + tile.kml() + "\"" + ", " + str(done_tiles[tile.key]) + ", " + str(tile.key) + "\n"
             f.write(line)
-
-            neighbour_keys = [key + 1, key - 1, (key + 169), (key - 169), (key + 170), (key + 168), (key - 170),
-                              (key - 168)]
-
-            weights = [0.9, 0.9, 0.9, 0.9, 0.8, 0.8, 0.8, 0.8]
-
-            for j in xrange(len(neighbour_keys)):
-                index = neighbour_keys[j]
-                if 0 < index < len(smaller_tiles) and done_tiles[index] is False:
-                    neighbour = smaller_tiles[index]
-                    line = "\"" + neighbour.kml() + "\"" + ", " + str(weights[j] * pollution_value) + ", " + str(
-                        neighbour.key) + "\n"
-                    f.write(line)
-                    done_tiles[neighbour.key] = True
-
-            print "Progress: " + str(i) + "/" + str(len(smaller_tiles))
 
     success = False
     tries = 0
