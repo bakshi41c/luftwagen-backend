@@ -65,7 +65,7 @@ def addPollutionLeveltoRoutes(routes,hour_offset):
             #  but this fine since the user might be standing there for a bit of time)
             route['pollution'] += pollution.get_pollution_value(route['coords'][i][0],route['coords'][i][1],hour_offset)
         # Pollution due to traffic data
-        for i in xrange(0, length, 10 if length<5000 else length/500):  # maximum 500 points todo review the 'magic' numbers
+        for i in xrange(0, length, 10 if length<1000 else length/100):  # maximum 100 points todo review the 'magic' numbers
             route['pollution'] += traffic.get_traffic_data(route['coords'][i][0],route['coords'][i][1])
 
 
