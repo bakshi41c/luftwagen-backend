@@ -3,7 +3,7 @@ import weather
 try:
     from ML.NN import setup
     get_pm5_prediction = setup()
-except ImportError:
+except Exception:
     import traceback
     print traceback.format_exc()
     get_pm5_prediction = None
