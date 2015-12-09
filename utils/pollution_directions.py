@@ -1,6 +1,6 @@
 import math
 import overpy
-import pollution
+import pollution, traffic
 from main_app.routers import Google
 
 
@@ -59,9 +59,14 @@ def getRandomDirectionsAtoB(Alat, Along, Blat, Blong):
 def addPollutionLeveltoRoutes(routes,hour_offset):
     for route in routes:
         route['pollution'] = 0
-        for i in xrange(0, len(route['coords']), 10):  # todo change the 'magic' number (10)
-
+        length = len(route['coords'])
+        # Pollution due to weather data + traffic data
+        for i in [0,length/2,length-1]: # First, middle, and last point (for these points traffic data is calculated twice
+            #  but this fine since the user might be standing there for a bit of time)
             route['pollution'] += pollution.get_pollution_value(route['coords'][i][0],route['coords'][i][1],hour_offset)
+        # Pollution due to traffic data
+        for i in xrange(0, length, 10 if length<5000 else length/500):  # maximum 500 points todo review the 'magic' numbers
+            route['pollution'] += traffic.get_traffic_data(route['coords'][i][0],route['coords'][i][1])
 
 
 def bestThreeRoutes(routes):
