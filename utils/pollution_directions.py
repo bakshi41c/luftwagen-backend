@@ -56,12 +56,12 @@ def getRandomDirectionsAtoB(Alat, Along, Blat, Blong):
     return routes
 
 
-def addPollutionLeveltoRoutes(routes):
+def addPollutionLeveltoRoutes(routes,hour_offset):
     for route in routes:
         route['pollution'] = 0
         for i in xrange(0, len(route['coords']), 10):  # todo change the 'magic' number (10)
 
-            route['pollution'] += calculatePollution(route['coords'][i])
+            route['pollution'] += pollution.get_pollution_value(route['coords'][i][0],route['coords'][i][1],hour_offset)
 
 
 def bestThreeRoutes(routes):
@@ -70,8 +70,3 @@ def bestThreeRoutes(routes):
 
 def compareRoutes(x, y):
     return cmp(x['pollution'], y['pollution'])
-
-
-def calculatePollution(point):
-    print point
-    return 1 #pollution.get_pollution_value()

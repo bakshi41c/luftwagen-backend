@@ -11,7 +11,8 @@ class PollutionForCoordinate(APIView):
     permission_classes = []
 
     def get(self, request):
-        pollution_value = pollution.get_pollution_value(float(request.GET['lat']), float(request.GET['long']), 0)
+        pollution_value = pollution.get_pollution_value(float(request.GET['lat']), float(request.GET['long']),
+                                                        float(request.GET.get('hour_offset',0)))
         json_response = {"pollution": str(pollution_value)}
         try:
             return Response(json_response)
@@ -26,7 +27,7 @@ class DirectionsForWorkout(APIView):
     def get(self, request):
         directions = getRandomDirections(float(request.GET['lat']), float(request.GET['long']),
                                          float(request.GET['distance']))
-        addPollutionLeveltoRoutes(directions)
+        addPollutionLeveltoRoutes(directions,float(request.GET.get('hour_offset',0)))
         try:
             return Response(bestThreeRoutes(directions))
         except Exception:
@@ -40,7 +41,7 @@ class DirectionsAtoB(APIView):
     def get(self, request):
         directions = getRandomDirectionsAtoB(float(request.GET['Alat']), float(request.GET['Along']),
                                              float(request.GET['Blat']), float(request.GET['Blong']))
-        addPollutionLeveltoRoutes(directions)
+        addPollutionLeveltoRoutes(directions,float(request.GET.get('hour_offset',0)))
         try:
             return Response(bestThreeRoutes(directions))
         except Exception:
