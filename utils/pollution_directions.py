@@ -3,6 +3,10 @@ import overpy
 import pollution, traffic
 from main_app.routers import Google
 
+# constants
+SAMPLE_POINT_STEP = 20
+MAX_SAMPLE_SIZE = 50
+
 
 def getPolutionPoints(LTx, LTy, RBx, RBy):
     # LT = Left top corner, and RB = right bottom corner
@@ -64,8 +68,8 @@ def addPollutionLeveltoRoutes(routes,hour_offset):
         for i in [0,length/2,length-1]: # First, middle, and last point (for these points traffic data is calculated twice
             #  but this fine since the user might be standing there for a bit of time)
             route['pollution'] += pollution.get_pollution_value(route['coords'][i][0],route['coords'][i][1],hour_offset)
-        # Pollution due to traffic data
-        for i in xrange(0, length, 10 if length<1000 else length/100):  # maximum 100 points todo review the 'magic' numbers
+        # Pollution due to traffic data, sample size = min(MAX_SIMPE_SIZE, length/SAMPLE_POINT_STEP)
+        for i in xrange(0, length, SAMPLE_POINT_STEP if length < (SAMPLE_POINT_STEP * MAX_SAMPLE_SIZE) else length / MAX_SAMPLE_SIZE):
             route['pollution'] += traffic.get_traffic_data(route['coords'][i][0],route['coords'][i][1])
 
 
